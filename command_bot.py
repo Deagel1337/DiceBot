@@ -51,19 +51,26 @@ class CommandBot(commands.Bot):
                     result_string+=str(result_throws[0])
                 sum  += int(result_throws[x])
             
-           
+            embedVar = discord.Embed(title="The die is cast!",description="Throw your dice!")
             # Depends on the number of dices    
             sign = " +" if extra_number > 0 else ""
             if len(result_throws) > 1:
                 if extra_number != 0:
-                    await ctx.send(result_string+sign+" {0} = {1}".format(extra_number,sum))
+                    value = result_string+sign+" {0} = {1}".format(extra_number,sum)
+                    embedVar.add_field(name="Your "+dice_roll+" throw",value=value,inline=False)
+                    await ctx.send(embed=embedVar)
                 else:
-                    await ctx.send(result_string+" = {0}".format(str(sum)))
+                    value = result_string+" = {0}".format(str(sum))
+                    embedVar.add_field(name="Your "+dice_roll+" throw",value=value,inline=False)
+                    await ctx.send(embed=embedVar)
             else:
                 if extra_number != 0:
-                    await ctx.send(result_string +sign+" {0} = {1}".format(extra_number,sum))
+                    value = result_string +sign+" {0} = {1}".format(extra_number,sum)
+                    embedVar.add_field(name="Your "+dice_roll+" throw",value=value,inline=False)
+                    await ctx.send(embed=embedVar)
                 else:
-                    await ctx.send(result_string)
+                    embedVar.add_field(name="Your "+dice_roll+" throw",value=result_string,inline=False)
+                    await ctx.send(embed=embedVar)
 
     def add_events(self):
         pass
