@@ -43,22 +43,22 @@ class CommandBot(commands.Bot):
 
             # Constructs string that will return to discord
             result_string = " "
-
+            
             for x in range(0,len(result_throws)):
                 if len(result_throws) > 1:
-                    result_string+=str(result_throws[x])+" + " if x < len(number_dices) else str(result_throws[x])
+                    result_string+=(str(result_throws[x])+" + " if x < len(result_throws)-1 else str(result_throws[x]))
                 else:
                     result_string+=str(result_throws[0])
                 sum  += int(result_throws[x])
             
            
             # Depends on the number of dices    
-            sign = '+' if extra_number > 0 else ''
+            sign = " +" if extra_number > 0 else ""
             if len(result_throws) > 1:
                 if extra_number != 0:
                     await ctx.send(result_string+sign+" {0} = {1}".format(extra_number,sum))
                 else:
-                    await ctx.send(result_string+" = {1}".format(sum))
+                    await ctx.send(result_string+" = {0}".format(str(sum)))
             else:
                 if extra_number != 0:
                     await ctx.send(result_string +sign+" {0} = {1}".format(extra_number,sum))
