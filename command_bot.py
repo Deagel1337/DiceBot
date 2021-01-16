@@ -55,22 +55,23 @@ class CommandBot(commands.Bot):
                 embedVar = discord.Embed(title="The die is cast!",description="Throw your dice!")
                 # Depends on the number of dices    
                 sign = " +" if extra_number > 0 else ""
+                name= "Your "+dice_roll+" throw" + " {0.author.name}".format(ctx.message)
                 if len(result_throws) > 1:
                     if extra_number != 0:
                         value = result_string+sign+" {0} = {1}".format(extra_number,sum)
-                        embedVar.add_field(name="Your "+dice_roll+" throw",value=value,inline=False)
+                        embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
                     else:
                         value = result_string+" = {0}".format(str(sum))
-                        embedVar.add_field(name="Your "+dice_roll+" throw",value=value,inline=False)
+                        embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
                 else:
                     if extra_number != 0:
                         value = result_string +sign+" {0} = {1}".format(extra_number,sum)
-                        embedVar.add_field(name="Your "+dice_roll+" throw",value=value,inline=False)
+                        embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
                     else:
-                        embedVar.add_field(name="Your "+dice_roll+" throw",value=result_string,inline=False)
+                        embedVar.add_field(name=name,value=result_string,inline=False)
                         await ctx.send(embed=embedVar)
             except Exception as e:
                 await ctx.send("Invalid input") 
