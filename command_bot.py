@@ -16,8 +16,11 @@ class CommandBot(commands.Bot):
         @self.command(name="roll",pass_context=True,aliases=["r"])
         # Example !roll 3w10 3 dices with 1 - 10 numbers
         async def roll(ctx,dice_roll):
-            
-                number_dices = dice_roll.split('w')
+                if dice_roll[0].isnumeric() == False:
+                    new_string = "1{0}".format(dice_roll)
+                    dice_roll = new_string
+                number_dices = dice_roll.split('w') if 'w' in dice_roll else dice_roll.split('d')
+
                 sum = 0             
                     
                 result_throws = []
@@ -73,7 +76,7 @@ class CommandBot(commands.Bot):
               
                 name= "Your "+dice_roll+" throw" + " {0.author.name}".format(ctx.message)
                 if len(result_throws) > 1:
-                    if extra_number != 0:
+                    if len(extra_number) != 0:
                         value = result_string+" {0} = {1}".format(extra_number,sum)
                         embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
@@ -82,7 +85,7 @@ class CommandBot(commands.Bot):
                         embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
                 else:
-                    if extra_number != 0:
+                    if len(extra_number) != 0:
                         value = result_string +" {0} = {1}".format(extra_number,sum)
                         embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
