@@ -72,10 +72,10 @@ class CommandBot(commands.Bot):
                     sum  += int(result_throws[x])
                 
                 embedVar = discord.Embed(title="The die is cast!",description="Throw your dice!")
-                # Depends on the number of dices    
-              
+                # Output depening on the inputformat    
                 name= "Your "+dice_roll+" throw" + " {0.author.name}".format(ctx.message)
                 if len(result_throws) > 1:
+                    # If output is !r 1w10+3+...
                     if len(extra_number) != 0:
                         value = result_string+" {0} = {1}".format(extra_number,sum)
                         embedVar.add_field(name=name,value=value,inline=False)
