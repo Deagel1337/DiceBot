@@ -16,30 +16,46 @@ class CommandBot(commands.Bot):
         @self.command(name="roll",pass_context=True,aliases=["r"])
         # Example !roll 3w10 3 dices with 1 - 10 numbers
         async def roll(ctx,dice_roll):
-            try:
-                number_dices = dice_roll.split('w',1)
-                extra_number = 0
+            
+                number_dices = dice_roll.split('w')
                 sum = 0             
                     
                 result_throws = []
             
                 # Handle the extra numbers
-                
-                if "+" in number_dices[1] :
-                    temp_num = number_dices[1].split("+",1)
-                    extra_number = int(temp_num[1])
-                    number_dices[1] = str(number_dices[1][0:number_dices[1].index('+')])
-                    sum += extra_number
-                elif "-" in number_dices[1]:
-                    temp_num = number_dices[1].split("-",1)
-                    extra_number = int(temp_num[1])
-                    number_dices[1] = str(number_dices[1][0:number_dices[1].index('-')])
-                    sum -= extra_number
-                    extra_number*=-1
+                more_extra_numbers = number_dices[1].split("+")
+                positive_numbers = []
+                negative_numbers = []
+                for x in range(0,len(more_extra_numbers)):
+                    if "-" in more_extra_numbers[x]:
+                        negative_numbers_collection = more_extra_numbers[x].split("-")                      
+                        for i in range(1,len(negative_numbers_collection)):
+                            negative_numbers.append(int(negative_numbers_collection[i]))
+                            positive_numbers.append(int(negative_numbers_collection[i-1]))
+                    else:                       
+                        positive_numbers.append(int(more_extra_numbers[x])) if x != 0 else 0
+                extra_number = ""
+
+                for x in positive_numbers:
+                    extra_number += " + {0}".format(x)
+                    sum += x
+                for x in negative_numbers:
+                    sum -= x
+                    extra_number += " - {0}".format(x)
+
+                # Split the extra numbers away
+                number_of_dices = int(number_dices[0])
+                max_number = ""
+                for x in range(0,len(number_dices[1])):
+                    if number_dices[1][x].isnumeric():
+                        max_number += number_dices[1][x]
+                    else:
+                        break
+                max_range_number =  int(max_number)
                 
                 # Dices are thrown
-                for x in range(0,int(number_dices[0])):
-                    throw = random.randint(1,int(number_dices[1]))
+                for x in range(0,number_of_dices):
+                    throw = random.randint(1,max_range_number)
                     result_throws.append(throw)
 
                 # Constructs string that will return to discord
@@ -54,11 +70,11 @@ class CommandBot(commands.Bot):
                 
                 embedVar = discord.Embed(title="The die is cast!",description="Throw your dice!")
                 # Depends on the number of dices    
-                sign = " +" if extra_number > 0 else ""
+              
                 name= "Your "+dice_roll+" throw" + " {0.author.name}".format(ctx.message)
                 if len(result_throws) > 1:
                     if extra_number != 0:
-                        value = result_string+sign+" {0} = {1}".format(extra_number,sum)
+                        value = result_string+" {0} = {1}".format(extra_number,sum)
                         embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
                     else:
@@ -67,14 +83,13 @@ class CommandBot(commands.Bot):
                         await ctx.send(embed=embedVar)
                 else:
                     if extra_number != 0:
-                        value = result_string +sign+" {0} = {1}".format(extra_number,sum)
+                        value = result_string +" {0} = {1}".format(extra_number,sum)
                         embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
                     else:
                         embedVar.add_field(name=name,value=result_string,inline=False)
                         await ctx.send(embed=embedVar)
-            except Exception as e:
-                await ctx.send("Invalid input") 
+            
 
     def add_events(self):
         pass
