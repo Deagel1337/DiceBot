@@ -26,12 +26,12 @@ class CommandBot(commands.Bot):
                 more_extra_numbers = number_dices[1].split("+")
                 positive_numbers = []
                 negative_numbers = []
-                for x in range(0,len(more_extra_numbers)):
+                for x in range(1,len(more_extra_numbers)):
                     if "-" in more_extra_numbers[x]:
-                        negative_numbers_collection = more_extra_numbers[x].split("-")                      
+                        negative_numbers_collection = more_extra_numbers[x].split("-")  
+                        positive_numbers.append(int(negative_numbers_collection[0]))            
                         for i in range(1,len(negative_numbers_collection)):
-                            negative_numbers.append(int(negative_numbers_collection[i]))
-                            positive_numbers.append(int(negative_numbers_collection[i-1]))
+                            negative_numbers.append(int(negative_numbers_collection[i]))                 
                     else:                       
                         positive_numbers.append(int(more_extra_numbers[x])) if x != 0 else 0
                 extra_number = ""
