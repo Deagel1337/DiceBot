@@ -7,6 +7,7 @@ import json
 class CommandBot(commands.Bot):
     intents = discord.Intents.default()
     intents.members = True
+    sum = 0
     def __init__(self,*args,**kwargs):
         super().__init__(command_prefix="!",intents=self.intents,*args,**kwargs)
         self.add_commands()
@@ -25,13 +26,13 @@ class CommandBot(commands.Bot):
             negative_numbers.append(int(numbers_collection[i])) if character == "-" else positive_numbers.append(int(numbers_collection[i]))
 
     
-    def calculate_number(self,positive_numbers,negative_numbers,sum):
+    def calculate_number(self,positive_numbers,negative_numbers):
         extra_number = ""
         for x in positive_numbers:
-                    extra_number += " + {0}".format(x)
-                    sum += x
+            extra_number += " + {0}".format(x)
+            self.sum += x
         for x in negative_numbers:
-            sum -= x
+            self.sum -= x
             extra_number += " - {0}".format(x)
         return extra_number
     
@@ -58,8 +59,6 @@ class CommandBot(commands.Bot):
                     dice_roll = new_string
                 number_dices = dice_roll.split('w') if 'w' in dice_roll else dice_roll.split('d')
 
-                sum = 0             
-                    
                 result_throws = []
             
                 # Handle the extra numbers
@@ -86,8 +85,8 @@ class CommandBot(commands.Bot):
                         else:
                             negative_numbers.append(int(more_extra_numbers[x])) if x!= 0 else 0
 
-                extra_number = self.calculate_number(positive_numbers,negative_numbers,sum)               
-
+                extra_number = self.calculate_number(positive_numbers,negative_numbers)               
+        
                 # Split the extra numbers away
                 max_range_number = self.get_number_of_dices(number_dices)
                 
@@ -105,7 +104,7 @@ class CommandBot(commands.Bot):
                         result_string+=(str(result_throws[x])+" + " if x < len(result_throws)-1 else str(result_throws[x]))
                     else:
                         result_string+=str(result_throws[0])
-                    sum  += int(result_throws[x])
+                    self.sum  += int(result_throws[x])
                 
                 embedVar = discord.Embed(title="The die is cast!",description="Throw your dice!")
                 # Output depening on the inputformat    
@@ -113,21 +112,22 @@ class CommandBot(commands.Bot):
                 if len(result_throws) > 1:
                     # If output is !r 1w10+3+...
                     if len(extra_number) != 0:
-                        value = result_string+" {0} = {1}".format(extra_number,sum)
+                        value = result_string+" {0} = {1}".format(extra_number,self.sum)
                         embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
                     else:
-                        value = result_string+" = {0}".format(str(sum))
+                        value = result_string+" = {0}".format(self.sum)
                         embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
                 else:
                     if len(extra_number) != 0:
-                        value = result_string +" {0} = {1}".format(extra_number,sum)
+                        value = result_string +" {0} = {1}".format(extra_number,self.sum)
                         embedVar.add_field(name=name,value=value,inline=False)
                         await ctx.send(embed=embedVar)
                     else:
                         embedVar.add_field(name=name,value=result_string,inline=False)
                         await ctx.send(embed=embedVar)
+                self.sum = 0;
             
 
     def add_events(self):
