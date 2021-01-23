@@ -12,6 +12,14 @@ class CommandBot(commands.Bot):
         self.add_commands()
         self.add_events()
 
+    def find_first_operand(self,number_string):
+        for character in number_string:
+            if not character.isnumeric():
+                return character
+    
+
+    
+
     def add_commands(self):
         @self.command(name="roll",pass_context=True,aliases=["r"])
         # Example !roll 3w10 3 dices with 1 - 10 numbers
@@ -26,19 +34,38 @@ class CommandBot(commands.Bot):
                 result_throws = []
             
                 # Handle the extra numbers
-                more_extra_numbers = number_dices[1].split("+")
+                is_negative = False
+                if self.find_first_operand(number_dices[1]) == "+":
+                    more_extra_numbers = number_dices[1].split("+")
+                else:
+                    more_extra_numbers = number_dices[1].split("-")
+                    is_negative = True
+            
                 positive_numbers = []
                 negative_numbers = []
+                
+                # Sorts extra numbers by positive and negatives
                 for x in range(1,len(more_extra_numbers)):
+                    print(more_extra_numbers)
                     if "-" in more_extra_numbers[x]:
-                        negative_numbers_collection = more_extra_numbers[x].split("-")  
-                        positive_numbers.append(int(negative_numbers_collection[0]))            
+                        negative_numbers_collection = more_extra_numbers[x].split("-")
+                        if negative_numbers_collection[0] != '':
+                            positive_numbers.append(int(negative_numbers_collection[0]))
                         for i in range(1,len(negative_numbers_collection)):
-                            negative_numbers.append(int(negative_numbers_collection[i]))                 
-                    else:                       
-                        positive_numbers.append(int(more_extra_numbers[x])) if x != 0 else 0
-                extra_number = ""
-
+                            negative_numbers.append(int(negative_numbers_collection[i])) 
+                    elif "+" in more_extra_numbers[x]:
+                        positive_numbers_collection = more_extra_numbers[x].split("+")
+       
+                        negative_numbers.append(int(positive_numbers_collection[0]))
+                        for i in range(1,len(positive_numbers_collection)):
+                            positive_numbers.append(int(positive_numbers_collection[i]))                
+                    else:              
+                        if is_negative == False:       
+                            positive_numbers.append(int(more_extra_numbers[x])) if x!= 0 else 0
+                        else:
+                            negative_numbers.append(int(more_extra_numbers[x])) if x!= 0 else 0
+                extra_number = ""               
+               
                 for x in positive_numbers:
                     extra_number += " + {0}".format(x)
                     sum += x
