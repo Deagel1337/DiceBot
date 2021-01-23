@@ -46,9 +46,9 @@ class CommandBot(commands.Bot):
         return  int(max_number)
     
     def create_embed_response(self,embedVar,result_string,name,extra_number = ""):
-        value = result_string+" {0} = {1}".format(extra_number,sum)
+        value = result_string+" {0} = {1}".format(extra_number,self.sum)
         embedVar.add_field(name=name,value=value,inline=False)
-        
+        return embedVar
         
     def add_commands(self):
         @self.command(name="roll",pass_context=True,aliases=["r"])
@@ -112,24 +112,20 @@ class CommandBot(commands.Bot):
                 if len(result_throws) > 1:
                     # If output is !r 1w10+3+...
                     if len(extra_number) != 0:
-                        value = result_string+" {0} = {1}".format(extra_number,self.sum)
-                        embedVar.add_field(name=name,value=value,inline=False)
+                        embedVar = self.create_embed_response(embedVar,result_string,name,extra_number)
                         await ctx.send(embed=embedVar)
                     else:
-                        value = result_string+" = {0}".format(self.sum)
-                        embedVar.add_field(name=name,value=value,inline=False)
+                        embedVar = self.create_embed_response(embedVar,result_string,name,extra_number)
                         await ctx.send(embed=embedVar)
                 else:
                     if len(extra_number) != 0:
-                        value = result_string +" {0} = {1}".format(extra_number,self.sum)
-                        embedVar.add_field(name=name,value=value,inline=False)
+                        embedVar = self.create_embed_response(embedVar,result_string,name,extra_number)
                         await ctx.send(embed=embedVar)
                     else:
-                        embedVar.add_field(name=name,value=result_string,inline=False)
+                        embedVar = self.create_embed_response(embedVar,result_string,name,extra_number)
                         await ctx.send(embed=embedVar)
-                self.sum = 0;
+                self.sum = 0
             
-
     def add_events(self):
         pass
                 
