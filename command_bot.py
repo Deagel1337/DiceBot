@@ -46,7 +46,7 @@ class CommandBot(commands.Bot):
                 
                 # Sorts extra numbers by positive and negatives
                 for x in range(1,len(more_extra_numbers)):
-                    print(more_extra_numbers)
+                   
                     if "-" in more_extra_numbers[x]:
                         negative_numbers_collection = more_extra_numbers[x].split("-")
                         if negative_numbers_collection[0] != '':
