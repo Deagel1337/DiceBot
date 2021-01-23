@@ -17,9 +17,38 @@ class CommandBot(commands.Bot):
             if not character.isnumeric():
                 return character
     
+    def sort_numbers(self,numbers_list,character,positive_numbers,negative_numbers):
+        numbers_collection = numbers_list.split(character)
+        if numbers_collection[0] != '':
+            positive_numbers.append(int(numbers_collection[0])) if character == "-" else negative_numbers.append(int(numbers_collection[0]))
+        for i in range(1,len(numbers_collection)):
+            negative_numbers.append(int(numbers_collection[i])) if character == "-" else positive_numbers.append(int(numbers_collection[i]))
 
     
-
+    def calculate_number(self,positive_numbers,negative_numbers,sum):
+        extra_number = ""
+        for x in positive_numbers:
+                    extra_number += " + {0}".format(x)
+                    sum += x
+        for x in negative_numbers:
+            sum -= x
+            extra_number += " - {0}".format(x)
+        return extra_number
+    
+    def get_number_of_dices(self,number_dices):
+        max_number = ""
+        for x in range(0,len(number_dices[1])):
+            if number_dices[1][x].isnumeric():
+                max_number += number_dices[1][x]
+            else:
+                break
+        return  int(max_number)
+    
+    def create_embed_response(self,embedVar,result_string,name,extra_number = ""):
+        value = result_string+" {0} = {1}".format(extra_number,sum)
+        embedVar.add_field(name=name,value=value,inline=False)
+        
+        
     def add_commands(self):
         @self.command(name="roll",pass_context=True,aliases=["r"])
         # Example !roll 3w10 3 dices with 1 - 10 numbers
@@ -46,44 +75,24 @@ class CommandBot(commands.Bot):
                 
                 # Sorts extra numbers by positive and negatives
                 for x in range(1,len(more_extra_numbers)):
-                   
                     if "-" in more_extra_numbers[x]:
-                        negative_numbers_collection = more_extra_numbers[x].split("-")
-                        if negative_numbers_collection[0] != '':
-                            positive_numbers.append(int(negative_numbers_collection[0]))
-                        for i in range(1,len(negative_numbers_collection)):
-                            negative_numbers.append(int(negative_numbers_collection[i])) 
+                        self.sort_numbers(more_extra_numbers[x],"-",positive_numbers,negative_numbers)
                     elif "+" in more_extra_numbers[x]:
-                        positive_numbers_collection = more_extra_numbers[x].split("+")
-       
-                        negative_numbers.append(int(positive_numbers_collection[0]))
-                        for i in range(1,len(positive_numbers_collection)):
-                            positive_numbers.append(int(positive_numbers_collection[i]))                
-                    else:              
+                        self.sort_numbers(more_extra_numbers[x],"+",positive_numbers,negative_numbers)               
+                    else:
+                        # Handles the first number correctly              
                         if is_negative == False:       
                             positive_numbers.append(int(more_extra_numbers[x])) if x!= 0 else 0
                         else:
                             negative_numbers.append(int(more_extra_numbers[x])) if x!= 0 else 0
-                extra_number = ""               
-               
-                for x in positive_numbers:
-                    extra_number += " + {0}".format(x)
-                    sum += x
-                for x in negative_numbers:
-                    sum -= x
-                    extra_number += " - {0}".format(x)
+
+                extra_number = self.calculate_number(positive_numbers,negative_numbers,sum)               
 
                 # Split the extra numbers away
-                number_of_dices = int(number_dices[0])
-                max_number = ""
-                for x in range(0,len(number_dices[1])):
-                    if number_dices[1][x].isnumeric():
-                        max_number += number_dices[1][x]
-                    else:
-                        break
-                max_range_number =  int(max_number)
+                max_range_number = self.get_number_of_dices(number_dices)
                 
                 # Dices are thrown
+                number_of_dices = int(number_dices[0])
                 for x in range(0,number_of_dices):
                     throw = random.randint(1,max_range_number)
                     result_throws.append(throw)
@@ -124,6 +133,3 @@ class CommandBot(commands.Bot):
     def add_events(self):
         pass
                 
-            
-
-
