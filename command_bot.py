@@ -3,7 +3,7 @@ import discord
 import random
 import asyncio
 import json
-
+from help_operators import HelpOperators
 class CommandBot(commands.Bot):
     intents = discord.Intents.default()
     intents.members = True
@@ -12,19 +12,6 @@ class CommandBot(commands.Bot):
         super().__init__(command_prefix="!",intents=self.intents,*args,**kwargs)
         self.add_commands()
         self.add_events()
-
-    def find_first_operand(self,number_string):
-        for character in number_string:
-            if not character.isnumeric():
-                return character
-    
-    def sort_numbers(self,numbers_list,character,positive_numbers,negative_numbers):
-        numbers_collection = numbers_list.split(character)
-        if numbers_collection[0] != '':
-            positive_numbers.append(int(numbers_collection[0])) if character == "-" else negative_numbers.append(int(numbers_collection[0]))
-        for i in range(1,len(numbers_collection)):
-            negative_numbers.append(int(numbers_collection[i])) if character == "-" else positive_numbers.append(int(numbers_collection[i]))
-
     
     def calculate_number(self,positive_numbers,negative_numbers):
         extra_number = ""
@@ -35,15 +22,6 @@ class CommandBot(commands.Bot):
             self.sum -= x
             extra_number += " - {0}".format(x)
         return extra_number
-    
-    def get_number_of_dices(self,number_dices):
-        max_number = ""
-        for x in range(0,len(number_dices[1])):
-            if number_dices[1][x].isnumeric():
-                max_number += number_dices[1][x]
-            else:
-                break
-        return  int(max_number)
     
     def create_embed_response(self,embedVar,result_string,name,extra_number = "",length_of_result_throw = 0):
         value = "" 
@@ -68,7 +46,7 @@ class CommandBot(commands.Bot):
             
                 # Handle the extra numbers
                 is_negative = False
-                if self.find_first_operand(number_dices[1]) == "+":
+                if HelpOperators.find_first_operand(number_dices[1]) == "+":
                     more_extra_numbers = number_dices[1].split("+")
                 else:
                     more_extra_numbers = number_dices[1].split("-")
@@ -80,9 +58,9 @@ class CommandBot(commands.Bot):
                 # Sorts extra numbers by positive and negatives
                 for x in range(1,len(more_extra_numbers)):
                     if "-" in more_extra_numbers[x]:
-                        self.sort_numbers(more_extra_numbers[x],"-",positive_numbers,negative_numbers)
+                        HelpOperators.sort_numbers(more_extra_numbers[x],"-",positive_numbers,negative_numbers)
                     elif "+" in more_extra_numbers[x]:
-                        self.sort_numbers(more_extra_numbers[x],"+",positive_numbers,negative_numbers)               
+                        HelpOperators.sort_numbers(more_extra_numbers[x],"+",positive_numbers,negative_numbers)               
                     else:
                         # Handles the first number correctly              
                         if is_negative == False:       
@@ -93,7 +71,7 @@ class CommandBot(commands.Bot):
                 extra_number = self.calculate_number(positive_numbers,negative_numbers)               
         
                 # Split the extra numbers away
-                max_range_number = self.get_number_of_dices(number_dices)
+                max_range_number = HelpOperators.get_number_of_dices(number_dices)
                 
                 # Dices are thrown
                 number_of_dices = int(number_dices[0])
