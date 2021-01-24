@@ -45,8 +45,12 @@ class CommandBot(commands.Bot):
                 break
         return  int(max_number)
     
-    def create_embed_response(self,embedVar,result_string,name,extra_number = ""):
-        value = result_string+" {0} = {1}".format(extra_number,self.sum)
+    def create_embed_response(self,embedVar,result_string,name,extra_number = "",length_of_result_throw = 0):
+        value = "" 
+        if length_of_result_throw > 0:
+           value = result_string+" {0} = {1}".format(extra_number,self.sum) if len(extra_number) > 0 else result_string + " = {0}".format(self.sum)
+        else:
+            value = result_string+" {0} = {1}".format(extra_number,self.sum) if len(extra_number) > 0 else result_string
         embedVar.add_field(name=name,value=value,inline=False)
         return embedVar
         
@@ -54,6 +58,7 @@ class CommandBot(commands.Bot):
         @self.command(name="roll",pass_context=True,aliases=["r"])
         # Example !roll 3w10 3 dices with 1 - 10 numbers
         async def roll(ctx,dice_roll):
+            try:
                 if dice_roll[0].isnumeric() == False:
                     new_string = "1{0}".format(dice_roll)
                     dice_roll = new_string
@@ -112,10 +117,10 @@ class CommandBot(commands.Bot):
                 if len(result_throws) > 1:
                     # If output is !r 1w10+3+...
                     if len(extra_number) != 0:
-                        embedVar = self.create_embed_response(embedVar,result_string,name,extra_number)
+                        embedVar = self.create_embed_response(embedVar,result_string,name,extra_number,len(result_throws))
                         await ctx.send(embed=embedVar)
                     else:
-                        embedVar = self.create_embed_response(embedVar,result_string,name,extra_number)
+                        embedVar = self.create_embed_response(embedVar,result_string,name,extra_number,len(result_throws))
                         await ctx.send(embed=embedVar)
                 else:
                     if len(extra_number) != 0:
@@ -125,7 +130,8 @@ class CommandBot(commands.Bot):
                         embedVar = self.create_embed_response(embedVar,result_string,name,extra_number)
                         await ctx.send(embed=embedVar)
                 self.sum = 0
-            
+            except:
+                await ctx.send("Invalid Input")
     def add_events(self):
         pass
                 
